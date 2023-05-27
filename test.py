@@ -10,7 +10,7 @@ draw = img.copy()
 pts_cnt = 0
 pts = np.zeros((4, 2), dtype=np.float32)
 
-ret,img_bin = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY) # 임계값 175: thresh_binary, thresh_tozero
+ret,img_bin = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY) # 임계값 175: thresh_binary, thresh_tozero. 130-170까지
 #cv2.imshow("bin", img_bin)
 
 # # opening = erosion -> dilation
