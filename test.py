@@ -3,15 +3,14 @@ import numpy as np
 
 win_name = "image"
 cv2.namedWindow(win_name, flags=cv2.WINDOW_KEEPRATIO)
-img = cv2.imread("5.jpg")
+img = cv2.imread("example.png")
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 rows, cols = img.shape[:2] # height, weight 값 구하기
 draw = img.copy()
 pts_cnt = 0
 pts = np.zeros((4, 2), dtype=np.float32)
 
-ret,img_bin = cv2.threshold(img, 125, 255, cv2.THRESH_BINARY) # 임계값 175: thresh_binary, thresh_tozero. 130-170까지
-#cv2.imshow("bin", img_bin)
+# ret,img_bin = cv2.threshold(img, 116, 255, cv2.THRESH_BINARY) # 임계값 175: thresh_binary, thresh_tozero. 130-170까지
 
 # # opening = erosion -> dilation
 # k = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -57,11 +56,18 @@ def onMouse(event, x, y, flags, params):
             # 변환 행렬 계산 
             mtrx = cv2.getPerspectiveTransform(pts1, pts2)
             # 원근 변환 적용
-            result = cv2.warpPerspective(img_bin, mtrx, (width, height))
+            result = cv2.warpPerspective(img, mtrx, (width, height))
+
+            otsu_threshold, image_result = cv2.threshold(result, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            print(otsu_threshold)
+            th, result = cv2.threshold(result, otsu_threshold, 255, cv2.THRESH_BINARY)
+
             cv2.namedWindow("scanned", cv2.WINDOW_NORMAL)
             cv2.imshow("scanned", result)
 
-cv2.imshow(win_name, img_bin)
+
+
+cv2.imshow(win_name, img)
 cv2.setMouseCallback(win_name, onMouse) # 마우스 콜백 함수를 gui 윈도우에 등록
 cv2.waitKey(0)
 cv2.destroyAllWindows()
