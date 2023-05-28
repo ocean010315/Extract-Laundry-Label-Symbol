@@ -3,14 +3,12 @@ import numpy as np
 
 win_name = "image"
 cv2.namedWindow(win_name, flags=cv2.WINDOW_KEEPRATIO)
-img = cv2.imread("example.png")
+img = cv2.imread("3.jpg")
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 rows, cols = img.shape[:2] # height, weight 값 구하기
 draw = img.copy()
 pts_cnt = 0
 pts = np.zeros((4, 2), dtype=np.float32)
-
-# ret,img_bin = cv2.threshold(img, 116, 255, cv2.THRESH_BINARY) # 임계값 175: thresh_binary, thresh_tozero. 130-170까지
 
 # # opening = erosion -> dilation
 # k = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -58,9 +56,11 @@ def onMouse(event, x, y, flags, params):
             # 원근 변환 적용
             result = cv2.warpPerspective(img, mtrx, (width, height))
 
-            otsu_threshold, image_result = cv2.threshold(result, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-            print(otsu_threshold)
-            th, result = cv2.threshold(result, otsu_threshold, 255, cv2.THRESH_BINARY)
+            t1, image_result = cv2.threshold(result, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) # 자동으로 임계값 찾기
+            th, result = cv2.threshold(result, t1, 255, cv2.THRESH_TOZERO)
+            # k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
+            # erosion = cv2.erode(result, k)
+            # dilation = cv2.dilate(erosion, k) # closing은 안 하는 게 더 낫겠는데 문제는 경계 검출이 쉽지 않음
 
             cv2.namedWindow("scanned", cv2.WINDOW_NORMAL)
             cv2.imshow("scanned", result)
