@@ -1,6 +1,7 @@
 import cv2
-import matplotlib as mlp
-import numpy as np        
+# import matplotlib as mlp
+import numpy as np
+import os
 
 def preprocess(gray):
     # Canny Edge Detection - thresh value를 지정해줘야 하는 번거로움
@@ -33,11 +34,13 @@ def preprocess(gray):
     return canny, thresh, img2, gaussian, highboost
 
 # 이미지, template 불러와서 각각 gray scale로 변환
-img = cv2.imread("label12.jpg")
+img = cv2.imread("label15.jpg")
+# O: label1, label3, label5, label9, label11, label12 확인 / label3 처럼 표백 설명 여부 없을 때는??? / X: label2-2, label5-3, label11-1, label13-1/3
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 draw = gray.copy()
 
 win_name = "gray origin"
+cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 pts_cnt = 0
 pts = np.zeros((4, 2), dtype=np.float32)
 def onMouse(event, x, y, flags, parmas):
@@ -85,35 +88,54 @@ cv2.waitKey(0)
 resize = cv2.imread("scanned.jpg")
 resize = cv2.cvtColor(resize, cv2.COLOR_BGR2GRAY)
 
-template = cv2.imread("symbol3-2.png")
-template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-cv2.imshow("template", template)
-
-# template matching을 위해 원본 이미지의 높이와 template의 높이 맞추기
-th, tw = template.shape[:2]
-ih, iw = resize.shape[:2]
-resize = cv2.resize(resize, (int(th*iw/ih), th))
-cv2.imshow("gray origin", resize)
-
 # 이미지 전처리
 canny, thresh, img2, gaussian, highboost = preprocess(resize)
 i = [canny, thresh, img2, gaussian, highboost]
-name = ["canny", "thresh", "img2", "gaussian", "highboost"]
 
-# 각각의 template matching 결과 출력
-for n in range(0, 5):
-    result = cv2.matchTemplate(i[n], template, cv2.TM_CCOEFF_NORMED)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    top_left = max_loc
-    match_val = max_val
+# 폴더 안에 모든 이미지 가져오기
+path = ["template/1/", "template/2/", "template/3/"]
 
-    bottom_right = (top_left[0] + tw, top_left[1] + th)
-    cv2.rectangle(resize, top_left, bottom_right, (0, 255, 0), 2)
-    cv2.namedWindow("result", cv2.WINDOW_NORMAL)
-    cv2.imshow("result", resize)
+# template 종류별로 서로 다른 폴더 생성
+for p in path:
+    symbol_list = os.listdir(p)
+    symbol = [file for file in symbol_list if file.endswith((".png", ".jpg"))]
+    # location = []
+    prob = []
 
-    print(name[n], ":", max_val)
-    print("top left :", top_left)
+    # 폴더 내 각 template에 대하여 matching 결과 출력
+    for image in symbol:
+        tmp_path = os.path.join(p, image)
+        tmp = cv2.imread(tmp_path)
+
+        template = cv2.cvtColor(tmp, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("template", template)
+
+        # template 이미지와 원본 이미지의 높이 맞추기
+        th, tw = template.shape[:2]
+        ih, iw = resize.shape[:2]
+        resize = cv2.resize(gaussian, (int(th*iw/ih), th))
+        cv2.imshow("gray origin", resize)
+
+        result = cv2.matchTemplate(resize, template, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        top_left = max_loc
+        match_val = max_val
+        # location.append(top_left)
+        prob.append(max_val)
+
+        bottom_right = (top_left[0] + tw, top_left[1] + th)
+        cv2.rectangle(resize, top_left, bottom_right, (0, 255, 0), 2)
+        cv2.namedWindow("result", cv2.WINDOW_NORMAL)
+        cv2.imshow("result", resize)
+
+        print("max_val :", max_val, "/ top left :", top_left)
+        # cv2.waitKey(0)
+
+    max_prob = max(prob)
+    index2 = prob.index(max_prob)
+    prob_path = os.path.join(p, symbol[index2])
+    print(prob_path, ":", max_prob)
+    img_prob = cv2.imread(prob_path)
+    cv2.imshow("result by probablity", img_prob)
+
     cv2.waitKey(0)
-
-cv2.waitKey(0)
