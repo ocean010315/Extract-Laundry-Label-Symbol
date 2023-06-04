@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/base.css">	
+	<link rel="stylesheet" href="css/modal.css">	
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="progressive-circle/css.css">
+
+	<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+	<title>Document</title>
+
+
+
+	<style>
+		.modal {
+		  position: absolute;
+		  top: 0;
+		  left: 0;
+  
+		  width: 100%;
+		  height: 100%;
+  
+		  display: none;
+  
+		  background-color: rgba(0, 0, 0, 0.4);
+		}
+
+	  </style>
+</head>
+<body>
+	
+	<div class="upload">
+		
+			<div class="modal">
+				<div class="modal_body">
+					<form method="POST"action="views.py" enctype="multipart/form-data" id="test">
+						<div class="button">
+							<label for="chooseFile">
+								👉 이 곳을 눌러 주세요 ! 👈
+							</label>
+						</div>
+						<input type="file" id="chooseFile" name="chooseFile" accept="image/*" onchange="loadFile(this)">
+						
+					</form>
+		
+					<div class="fileContainer">
+						<div class="fileInput">
+							<p>FILE: </p>
+							<p id="fileName"></p>
+						</div>
+						<div class="buttonContainer">
+							<button type="submit" class="submitButton" id="submitButton" form="test">SUBMIT</button>
+						</div>
+					</div>
+					<div id="loading-container" >
+						<div class="loading"></div>
+						<div id="loading-text">loading</div>
+					</div>
+					
+				</div>
+				
+			</div>
+			<input type="file" class="real-upload" accept="image/*" required multiple style="display: none;">
+		
+		<ul class="text hidden">
+			<li class="spaced">인</li>
+			<li class="ghost">간</li>
+			<li class="ghost">상</li>
+			<li class="ghost">호</li>
+			<li class="ghost">작</li>
+			<li class="ghost">용</li>
+			<li class="spaced">컴</li>
+			<li class="ghost">퓨</li>
+			<li class="ghost">터</li>
+			<li class="ghost">2</li>
+			<li class="ghost">조</li>
+			<li class="ghost">프</li>
+			<li class="ghost">로</li>
+			<li class="ghost">젝</li>
+			<li class="ghost">트</li>
+	  	</ul>
+	</div>
+	  <script>
+		$(function() {
+			var text = $(".text");
+			$(window).scroll(function() {
+			  var scroll = $(window).scrollTop();
+		  
+			  if (scroll >= 200) {
+				text.removeClass("hidden");
+			  } else {
+				text.addClass("hidden");
+			  }
+			});
+		  });
+		  
+			const realUpload = document.querySelector('.real-upload');
+			const upload = document.querySelector('.text');
+			const modal = document.querySelector('.modal');
+			const body = document.querySelector('body');
+			const submit = document.querySelector('.submit');
+
+			
+			
+			
+				  
+			upload.addEventListener('click', () => {
+			  modal.classList.toggle('show');
+	  
+			  if (modal.classList.contains('show')) {
+				body.style.overflow = 'hidden';
+			  }
+			});
+	  
+			modal.addEventListener('click', (event) => {
+			  if (event.target === modal) {
+				modal.classList.toggle('show');
+	  
+				if (!modal.classList.contains('show')) {
+				  body.style.overflow = 'auto';
+				}
+			  }
+			});
+		  
+			
+			
+		
+			
+			
+	  </script>
+	  <script src="js/index.js"></script>
+</body>
+</html>
