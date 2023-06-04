@@ -1,15 +1,3 @@
-var submitButton = document.getElementById('submitButton');
-submitButton.onclick = showImage;     //Submit 버튼 클릭시 이미지 보여주기
-
-function showImage() {
-  
-    
-    document.getElementById('loading-container').style.visibility = 'visible';
-
-    document.getElementById('fileName').textContent = null;     //기존 파일 이름 지우기
-}
-
-
 function loadFile(input) {
     var file = input.files[0];
 

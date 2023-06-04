@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="css/base.css">	
-	<link rel="stylesheet" href="css/modal.css">	
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="progressive-circle/css.css">
+	<link rel="stylesheet" href="../static/css/base.css">	
+	<link rel="stylesheet" href="../static/css/modal.css">	
+	<link rel="stylesheet" href="../static/css/style.css">
+	<link rel="stylesheet" href="../static/css/circle2.css">
 
 	<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 	<title>Document</title>
@@ -36,28 +36,29 @@
 		
 			<div class="modal">
 				<div class="modal_body">
-					<form method="POST"action="views.py" enctype="multipart/form-data" id="test">
+					<form method="POST"action="http://localhost:5000/result" enctype="multipart/form-data" id="test" name="data">
 						<div class="button">
 							<label for="chooseFile">
 								👉 이 곳을 눌러 주세요 ! 👈
 							</label>
 						</div>
-						<input type="file" id="chooseFile" name="chooseFile" accept="image/*" onchange="loadFile(this)">
-						
+						<input type="file" id="chooseFile" name="chooseFile" accept="image/*" onchange="displayImagePath()">
+						<input type="text" id="text" name="text">
 					</form>
 		
 					<div class="fileContainer">
 						<div class="fileInput">
 							<p>FILE: </p>
-							<p id="fileName"></p>
+							
 						</div>
 						<div class="buttonContainer">
-							<button type="submit" class="submitButton" id="submitButton" form="test">SUBMIT</button>
+							<button type="button" class="submitButton" id="submitButton" form="test" onclick="loading()">SUBMIT</button>
 						</div>
 					</div>
-					<div id="loading-container" >
-						<div class="loading"></div>
-						<div id="loading-text">loading</div>
+					<div class="loading" id="loading" style="display: none;">
+						<span></span>
+						<span></span>
+						<span></span>
 					</div>
 					
 				</div>
@@ -82,8 +83,13 @@
 			<li class="ghost">젝</li>
 			<li class="ghost">트</li>
 	  	</ul>
+		<div id="loading-container" >
+			<div class="loading"></div>
+			<div id="loading-text">loading</div>
+		</div>
 	</div>
 	  <script>
+		
 		$(function() {
 			var text = $(".text");
 			$(window).scroll(function() {
@@ -97,12 +103,24 @@
 			});
 		  });
 		  
+		
+		function displayImagePath() {
+			var fileInput = document.getElementById('chooseFile');
+			var imagePath = fileInput.value.split('/').pop().split('\\').pop();
+			document.getElementById('text').value = "C:/CV2/img" + imagePath;
+		  };
+		  
 			const realUpload = document.querySelector('.real-upload');
 			const upload = document.querySelector('.text');
 			const modal = document.querySelector('.modal');
 			const body = document.querySelector('body');
 			const submit = document.querySelector('.submit');
 
+		function loading(){
+			var loading = document.getElementById('loading');
+			loading.style.display='block';
+			setTimeout(document.data.submit() , 300000)
+			}
 			
 			
 			
@@ -131,6 +149,6 @@
 			
 			
 	  </script>
-	  <script src="js/index.js"></script>
+	  <script src="../static/js/index.js"></script>
 </body>
 </html>

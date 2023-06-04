@@ -22,6 +22,11 @@ body {
   border-bottom: 1px solid #fff;
 }
 
+#text{
+  padding-top: 10px;
+  background-color: none;
+  border: none;
+}
 .text li {
   display: inline-block;
   float: left;
