@@ -40,10 +40,10 @@ roi_image = blur_img[np.min(roi[:, 1]):np.max(roi[:, 1]), np.min(roi[:, 0]):np.m
 roi_edges = cv2.Canny(roi_image, 30, 150)
 
 # template 폴더에서 모든 이미지를 불러옴
-template_dir = ['template/1/', 'template/2/', 'template/3/', 'template/4/', 'template/5/']
-templates = []
+template_dir = ['template/1/', 'template/2/', 'template/3/', 'template/4/', 'template/5/', 'template/6/', 'template/7/']
 
 for dir in template_dir:
+    templates = []
     for file in glob.glob(dir + '*.*'):
         if file.endswith('.png') or file.endswith('.jpg'):
             temp_img = cv2.imread(file)
@@ -63,12 +63,11 @@ for i, template_edge in enumerate(template_edges):
 matches.sort(key=lambda x: x[1])  # 유사도에 따라 정렬
 
 # 가장 유사한 template 이미지 3개씩 출력
-for i in range(len(template_dir)):
-    print(f"Template {i + 1}:")
+print(f"Folder: {dir}")
     for j in range(3):
-        index = matches[i * 3 + j][0]
+        index = matches[j][0]
         template = templates[index]
-        cv2.imshow(f'Matched {i + 1}-{j + 1}', template)
+        cv2.imshow(f'Matched {dir}-{j + 1}', template)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
