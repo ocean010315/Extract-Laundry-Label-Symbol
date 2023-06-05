@@ -10,15 +10,6 @@ draw = img.copy()
 pts_cnt = 0
 pts = np.zeros((4, 2), dtype=np.float32)
 
-# # opening = erosion -> dilation
-# k = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-# erosion = cv2.erode(img_bin, k)
-# dilation = cv2.dilate(erosion, k)
-
-# # closing = dilation -> erosion
-# d2 = cv2.dilate(dilation, k)
-# e2 = cv2.erode(d2, k)
-
 def onMouse(event, x, y, flags, params):
     global pts_cnt
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -56,14 +47,12 @@ def onMouse(event, x, y, flags, params):
             # 원근 변환 적용
             result = cv2.warpPerspective(img, mtrx, (width, height))
 
-            t1, image_result = cv2.threshold(result, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) # 자동으로 임계값 찾기
-            th, result = cv2.threshold(result, t1, 255, cv2.THRESH_TOZERO)
-            # k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
-            # erosion = cv2.erode(result, k)
-            # dilation = cv2.dilate(erosion, k) # closing은 안 하는 게 더 낫겠는데 문제는 경계 검출이 쉽지 않음
+            # t1, image_result = cv2.threshold(result, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) # 자동으로 임계값 찾기
+            # th, result = cv2.threshold(result, t1, 255, cv2.THRESH_TOZERO)
 
             cv2.namedWindow("scanned", cv2.WINDOW_NORMAL)
             cv2.imshow("scanned", result)
+            cv2.imwrite("crop.jpg", result)
 
 
 
