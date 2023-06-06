@@ -2,7 +2,7 @@ function loadFile(input) {
     var file = input.files[0];
 
     var name = document.getElementById('fileName');
-    name.textContent = "C:/CV2/img/" + file.name;
+    name.textContent = "C:/CV2/img/" + file.name; // 경로 설정 해주기 
 
     var newImage = document.createElement("img");
     newImage.setAttribute("class", 'img');
