@@ -10,14 +10,12 @@ def roi_selection(event, x, y, flags, param):
         if len(roi) < 4: # 4개의 점만 선택하도록 제한
             roi.append((x, y))
             cv2.circle(label_img, (x,y), 5, (255, 0, 0), -1) # 좌표 파란색으로 출력
-            # cv2.putText(label_img, '('+str(x)+','+str(y)+')', (x+10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
 cv2.namedWindow('image')
 cv2.setMouseCallback('image', roi_selection)
 
 # 이미지를 불러오고, 그레이스케일 변환 후 블러 처리
-label_path = '' \
-             'label/label1.png'
+label_path = 'label/label1.png'
 label_img = cv2.imread(label_path)
 gray_img = cv2.cvtColor(label_img, cv2.COLOR_BGR2GRAY)
 blur_img = cv2.GaussianBlur(gray_img, (5,5), 0)
@@ -33,12 +31,11 @@ roi = np.array(roi)
 s = roi.sum(axis=1)
 roi_image = blur_img[np.min(roi[:,1]):np.max(roi[:,1]), np.min(roi[:,0]):np.max(roi[:,0])]
 
-
 # label 이미지의 윤곽선 추출
 roi_edges = cv2.Canny(roi_image, 30, 150)
 
 # template 폴더에서 모든 이미지를 불러옴
-template_dir = ['template/1/', 'template/2/', 'template/3/', 'template/4/', 'template/5/']
+template_dir = ['template/1/', 'template/2/', 'template/3/', 'template/4/', 'template/5/', 'template/6/', 'template/7/' ]
 templates = []
 
 for dir in template_dir:
@@ -54,18 +51,12 @@ template_edges = [cv2.Canny(template, 30, 150) for template in templates]
 
 # 윤곽선 비교를 통해 가장 비슷한 template 이미지를 찾음
 matches = [cv2.matchShapes(roi_edges, template_edge, cv2.CONTOURS_MATCH_I2, 0) for template_edge in template_edges]
-top3_index = np.argsort(matches)[:3] # 가장 비슷한 template 3개의 index (오름차순 3개)
+# 가장 비슷한 template 3개의 index (오름차순 3개)
+top3_index = np.argsort(matches)[:3]
 
 # 가장 유사한 template 이미지 3개 출력
 for i, index in enumerate(top3_index):
     cv2.imshow('Matched Template {}'.format(i+1), templates[index])
-
-# # 결과를 출력
-# if matches[top3_index[0]] < 0.01: # 가장 비슷한 이미지의 유사도가 0.01보다 작다면
-#     cv2.imshow('Matched Template', templates[top3_index[0]])
-# else: # 그렇지 않다면, 가장 비슷한 template 3개를 출력
-#     for i, index in enumerate(top3_index):
-#         cv2.imshow('Matched Template {}'.format(i+1), templates[index])
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
