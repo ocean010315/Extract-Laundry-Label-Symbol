@@ -260,6 +260,53 @@ def onMouse(event, x, y, flags, parmas):
 
             print("이미지 저장 완료")
 
+def description(template, tmp_path):
+    textImg = cv2.imread("C:/openSource/Extract-Laundry-Label-Symbol/osh/text.png", cv2.IMREAD_COLOR)
+   
+    # description image에 템플릿 이미지 출력
+    desc_h, desc_w = textImg.shape[:2]
+    template_rgb = cv2.cvtColor(template, cv2.COLOR_GRAY2RGB)
+    template_h, template_w = template_rgb.shape[:2]
+        
+    # 같은 비율로 template image resize
+    template_aspect_ratio = template_w / template_h
+        
+    if template_aspect_ratio > 1:
+        new_template_w = int(120 * template_aspect_ratio)
+        new_template_h = 120
+    else:
+        new_template_w = 120
+        new_template_h = int(120 / template_aspect_ratio)
+            
+    resized_template = cv2.resize(template_rgb, (new_template_w, new_template_h))
+    resized_h, resized_w = resized_template.shape[:2]
+        
+    x_offset = desc_w - resized_w
+    y_offset = desc_h - resized_h
+        
+    # description image의 crop된 일부에 resized_template 합성
+    crop = textImg[y_offset-70:desc_h-70, x_offset-50:desc_w-50]
+    template_resized = cv2.resize(template_rgb, (crop.shape[1], crop.shape[0]))
+    crop[:] = template_resized
+        
+    # 템플릿 이미지에 대한 설명 출력
+    text_pillow = Image.fromarray(textImg)
+    fontpath = "C:\\Users\\지은\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NanumSquareRoundEB.ttf"
+    font = ImageFont.truetype(fontpath, 15)
+        
+    b, g, r = 0, 0, 0
+    draw = ImageDraw.Draw(text_pillow, 'RGB')
+        
+    # 딕셔너리에서 template image별 설명을 불러와 출력
+    description = descriptions.get(tmp_path)
+    alert = "                세탁 기호는 한국산업표준에 의해 분류되었습니다."
+    if description is not None:
+        draw.text((50, 250), description, font=font, fill=(b,g,r))
+        draw.text((50, 480), alert, font=font, fill=(b,g,r))
+        
+    cv2_image = np.array(text_pillow)
+    cv2.imshow("description", cv2_image)          
+    
 cv2.imshow(win_name, gray)
 cv2.setMouseCallback(win_name, onMouse)
 cv2.waitKey(0)
@@ -289,52 +336,8 @@ for p in path:
         template = cv2.cvtColor(tmp, cv2.COLOR_BGR2GRAY)      
         cv2.imshow("template", template)
         
-        textImg = cv2.imread("C:/openSource/Extract-Laundry-Label-Symbol/osh/text.png", cv2.IMREAD_COLOR)
-        
-        # description image에 템플릿 이미지 출력
-        desc_h, desc_w = textImg.shape[:2]
-        template_rgb = cv2.cvtColor(template, cv2.COLOR_GRAY2RGB)
-        template_h, template_w = template_rgb.shape[:2]
-        
-        # 같은 비율로 template image resize
-        template_aspect_ratio = template_w / template_h
-        
-        if template_aspect_ratio > 1:
-            new_template_w = int(120 * template_aspect_ratio)
-            new_template_h = 120
-        else:
-            new_template_w = 120
-            new_template_h = int(120 / template_aspect_ratio)
+        description(template, tmp_path)
             
-        resized_template = cv2.resize(template_rgb, (new_template_w, new_template_h))
-        resized_h, resized_w = resized_template.shape[:2]
-        
-        x_offset = desc_w - resized_w
-        y_offset = desc_h - resized_h
-        
-        # description image의 crop된 일부에 resized_template 합성
-        crop = textImg[y_offset-70:desc_h-70, x_offset-50:desc_w-50]
-        template_resized = cv2.resize(template_rgb, (crop.shape[1], crop.shape[0]))
-        crop[:] = template_resized
-        
-        # 템플릿 이미지에 대한 설명 출력
-        text_pillow = Image.fromarray(textImg)
-        fontpath = "C:\\Users\\지은\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NanumSquareRoundEB.ttf"
-        font = ImageFont.truetype(fontpath, 15)
-        
-        b, g, r = 0, 0, 0
-        draw = ImageDraw.Draw(text_pillow, 'RGB')
-        
-        # 딕셔너리에서 template image별 설명을 불러와 출력
-        description = descriptions.get(tmp_path)
-        alert = "                세탁 기호는 한국산업표준에 의해 분류되었습니다."
-        if description is not None:
-            draw.text((50, 250), description, font=font, fill=(b,g,r))
-            draw.text((50, 480), alert, font=font, fill=(b,g,r))
-        
-        cv2_image = np.array(text_pillow)
-        cv2.imshow("description", cv2_image)          
-        
         # template 이미지와 원본 이미지의 높이 맞추기
         th, tw = template.shape[:2]
         ih, iw = resize.shape[:2]
@@ -360,12 +363,17 @@ for p in path:
     sort = tuple(sorted(prob, reverse=True))
     for i in range (1, 4):
         print(sort[i][1], ":", sort[i][0])
-        img_prob = cv2.imread(sort[i][1])
+        img_prob = cv2.imread(sort[i][1], cv2.IMREAD_GRAYSCALE)
         img_prob_path = sort[i][1]
+        print("img_prob_path", sort[i][1])
         cv2.imshow("result by probability", img_prob)
-
+        
+        description(img_prob, img_prob_path)
+        
         print("max_val :", max_val, "/ top left :", top_left)
-            
+                          
         cv2.waitKey(0)
-
+        
     cv2.waitKey(0)
+    
+    # python3 label_extraction.py
