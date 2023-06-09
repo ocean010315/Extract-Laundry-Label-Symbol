@@ -316,6 +316,8 @@ resize = cv2.cvtColor(resize, cv2.COLOR_BGR2GRAY)
 
 # 이미지 전처리
 gaussian = cv2.GaussianBlur(resize, (0, 0), 4)
+edge = cv2.subtract(resize, gaussian)
+highboost = cv2.add(resize, edge)
 
 # 폴더 안에 모든 이미지 가져오기
 path = ["C:/openSource/Extract-Laundry-Label-Symbol/osh/template/1/", "C:/openSource/Extract-Laundry-Label-Symbol/osh/template/2/", "C:/openSource/Extract-Laundry-Label-Symbol/osh/template/3/",
@@ -340,7 +342,7 @@ for p in path:
         # template 이미지와 원본 이미지의 높이 맞추기
         th, tw = template.shape[:2]
         ih, iw = resize.shape[:2]
-        target = cv2.resize(gaussian, (int(th*iw/ih), th))
+        target = cv2.resize(highboost, (int(th*iw/ih), th))
 
         result = cv2.matchTemplate(target, template, cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
