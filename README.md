@@ -1,1 +1,0 @@
-# Extract-Laundry-Label-Symbol
